@@ -1,0 +1,30 @@
+services:
+  web:
+    build: .  # Build the image from the current directory (where your Dockerfile is)
+    ports:
+      - "8000:80"  # Map port 8000 on the host to port 80 in the container
+    depends_on:
+      - db  # Ensure the database starts before the FastAPI app
+    environment:
+      DATABASE_URL: postgresql://postgres:password@db:5432/mydb  # Provide the database URL
+    networks:
+      - my-network
+
+  db:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    ports:
+      - "5433:5432"  # Map external port 5433 to internal port 5432
+    volumes:
+      - my_postgres_data:/var/lib/postgresql/data
+    networks:
+      - my-network
+
+volumes:
+  my_postgres_data:  # Define a named volume to store database data
+
+networks:
+  my-network:  # Define a custom network
